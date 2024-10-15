@@ -13,12 +13,6 @@ class AppRouter {
         redirect: (BuildContext context, GoRouterState state) => '/product',
       ),
       GoRoute(
-        path: '/product',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ProductScreen();
-        },
-      ),
-      GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return const LoginScreen();
@@ -34,6 +28,12 @@ class AppRouter {
         path: '/main',
         builder: (BuildContext context, GoRouterState state) {
           return const MainScreen();
+        },
+      ),
+      GoRoute(
+        path: '/product',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProductScreen();
         },
       ),
     ],
