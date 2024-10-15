@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pawprints/services/auth.service.dart';
 import 'package:pawprints/ui/utils/toast.dart';

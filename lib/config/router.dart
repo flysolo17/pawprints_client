@@ -3,13 +3,20 @@ import 'package:go_router/go_router.dart';
 import 'package:pawprints/ui/auth/login.dart';
 import 'package:pawprints/ui/auth/register.dart';
 import 'package:pawprints/ui/main/main.dart';
+import 'package:pawprints/ui/main/product/product.dart';
 
 class AppRouter {
   final GoRouter router = GoRouter(
     routes: <GoRoute>[
       GoRoute(
         path: '/',
-        redirect: (BuildContext context, GoRouterState state) => '/login',
+        redirect: (BuildContext context, GoRouterState state) => '/product',
+      ),
+      GoRoute(
+        path: '/product',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ProductScreen();
+        },
       ),
       GoRoute(
         path: '/login',
