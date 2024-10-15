@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_toastr/flutter_toastr.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pawprints/services/auth.service.dart';
 import 'package:pawprints/ui/utils/toast.dart';
@@ -22,15 +21,12 @@ class _LoginScreenState extends State<LoginScreen> {
     authService.login(email: email, password: password).then((data) {
       if (data != null) {
         showToast(context, "Successfully Logged in");
-        context.push("/main");
-        print("success");
+        context.push("/dashboard");
       } else {
-        print("failed");
-        showToast(context, "invalid email or password");
+        showToast(context, "Invalid email or password");
       }
     }).catchError((err) {
-      print(err);
-      showToast(context, err ?? "login failed");
+      showToast(context, err ?? "Login failed");
     });
   }
 
@@ -51,40 +47,103 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const SizedBox(height: 50),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Image.asset(
+                    'lib/assets/img/paw_logo.png', // Add your logo here
+                    height: 100,
+                  ),
+                ),
+                const Text(
+                  "PAWPRINTS",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const Text(
+                  "Aucena Veterinary Clinic",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 30),
                 TextField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.email_outlined),
                     labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 20),
                 TextField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                  ),
                   obscureText: true,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.visibility_off),
+                      onPressed: () {
+                        // Handle password visibility toggle
+                      },
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 16.0),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Forgot Password logic here
+                    },
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    backgroundColor: const Color(0xFF001B44),
+                  ),
                   onPressed: login,
-                  child: const Text("Login"),
+                  child: const Text(
+                    "Log In",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
+                const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
                     context.push("/register");
                   },
-                  child: const Text("Signup"),
+                  child: const Text("Signup",
+                      style: TextStyle(color: Colors.black54)),
                 ),
               ],
             ),
