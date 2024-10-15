@@ -58,9 +58,14 @@ class AuthService {
   }
 
   // Get User from Firestore
-  Future<Users?> getUser(String uid) async {
+  Future<Users?> getUser() async {
     try {
-      DocumentSnapshot doc = await firestore.collection('users').doc(uid).get();
+      User? user = auth.currentUser;
+      if (user == null) {
+        return null;
+      }
+      DocumentSnapshot doc =
+          await firestore.collection('users').doc(user.uid).get();
       if (doc.exists) {
         return Users.fromJson(doc.data() as Map<String, dynamic>);
       }
@@ -73,8 +78,7 @@ class AuthService {
 
   // Helper function to convert Firebase user to custom User model
   Future<Users?> _getUserFromFirebase(User? firebaseUser) async {
-    if (firebaseUser == null) return null;
-    return getUser(firebaseUser.uid);
+    return getUser();
   }
 
   Stream<User?> authStateChanges() {

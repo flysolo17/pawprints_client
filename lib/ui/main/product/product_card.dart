@@ -3,7 +3,8 @@ import 'package:pawprints/models/product/product.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key, required this.product});
+  final VoidCallback onTap;
+  const ProductCard({super.key, required this.product, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +13,7 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
+          onTap();
           debugPrint('Card tapped.');
         },
         child: Column(

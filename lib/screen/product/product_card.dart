@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pawprints/models/product/product.dart';
 
+import '../../models/product/stock_management.dart';
+
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key, required this.product});
+  final VoidCallback onTap;
+  const ProductCard({super.key, required this.product, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,14 @@ class ProductCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
+              trailing: product.type == ProductType.GOODS
+                  ? IconButton(
+                      onPressed: () {
+                        onTap();
+                      },
+                      icon: const Icon(Icons.shopping_cart),
+                    )
+                  : null,
             )
           ],
         ),

@@ -1,4 +1,6 @@
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Cart {
   String? id;
@@ -9,12 +11,12 @@ class Cart {
   DateTime addedAt;
 
   Cart({
-    this.id,
-    this.userID,
-    this.productID,
-    this.quantity = 0,
-    this.price = 0.0,
-    DateTime? addedAt,
+    required this.id,
+    required this.userID,
+    required this.productID,
+    required this.quantity,
+    required this.price,
+    required DateTime? addedAt,
   }) : addedAt = addedAt ?? DateTime.now();
 
   factory Cart.fromJson(Map<String, dynamic> json) {
@@ -24,7 +26,7 @@ class Cart {
       productID: json['productID'],
       quantity: json['quantity'],
       price: json['price'],
-      addedAt: DateTime.parse(json['addedAt']),
+      addedAt: (json['addedAt'] as Timestamp).toDate(),
     );
   }
 
@@ -35,7 +37,7 @@ class Cart {
       'productID': productID,
       'quantity': quantity,
       'price': price,
-      'addedAt': DateFormat('yyyy-MM-ddTHH:mm:ss').format(addedAt),
+      'addedAt': Timestamp.fromDate(addedAt),
     };
   }
 }

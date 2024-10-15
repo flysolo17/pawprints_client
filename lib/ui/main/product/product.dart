@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:pawprints/models/cart/cart.dart';
 import 'package:pawprints/models/product/product.dart';
 import 'package:pawprints/models/product/stock_management.dart';
+import 'package:pawprints/services/auth.service.dart';
+import 'package:pawprints/services/cart.service.dart';
 import 'package:pawprints/services/product.service.dart';
 import 'package:pawprints/ui/main/product/product_card.dart';
+import 'package:pawprints/ui/utils/toast.dart';
+
+import '../../../models/users/users.dart';
 
 class ProductScreen extends StatelessWidget {
   const ProductScreen({super.key});
@@ -40,7 +46,43 @@ class ProductTabs extends StatefulWidget {
 }
 
 class _ProductTabsState extends State<ProductTabs> {
+  final AuthService _authService = AuthService();
+
   ProductType selectedType = ProductType.SERVICES;
+  Users? _users;
+  CartService _cartService = CartService();
+
+  void addToCart(Product product) {
+    if (_users == null) {
+      return;
+    }
+    Cart cart = Cart(
+        id: generateRandomNumber(maxLength: 10),
+        userID: _users?.id ?? "",
+        productID: product.id,
+        quantity: 1,
+        price: product.price,
+        addedAt: DateTime.now());
+    _cartService.addToCart(cart).then((_) {
+      showToast(context, "Succesffully Added");
+    }).catchError((err) {
+      showToast(context, "Failed to add ${product.name} to cart: $err");
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeUser();
+  }
+
+  void _initializeUser() async {
+    Users? user = await _authService.getUser();
+    setState(() {
+      _users = user;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Product> filteredProducts = widget.products
@@ -111,7 +153,12 @@ class _ProductTabsState extends State<ProductTabs> {
               ),
             ],
           ),
-          ProductList(products: filteredProducts)
+          ProductList(
+            products: filteredProducts,
+            addToCart: (Product product) {
+              addToCart(product);
+            },
+          )
         ],
       ),
     );
@@ -120,17 +167,25 @@ class _ProductTabsState extends State<ProductTabs> {
 
 class ProductList extends StatelessWidget {
   final List<Product> products;
-  const ProductList({super.key, required this.products});
+  final void Function(Product) addToCart;
+  const ProductList(
+      {super.key, required this.products, required this.addToCart});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: products.length,
       shrinkWrap: true, // Add this to wrap content
-      physics: NeverScrollableScrollPhysics(), // Disable internal scrolling
+      physics:
+          const NeverScrollableScrollPhysics(), // Disable internal scrolling
       itemBuilder: (context, index) {
         final product = products[index];
-        return ProductCard(product: product);
+        return ProductCard(
+          product: product,
+          onTap: () {
+            addToCart(product);
+          },
+        );
       },
     );
   }

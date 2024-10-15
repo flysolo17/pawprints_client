@@ -31,18 +31,16 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void getCurrentUser() {
-    authService.authStateChanges().listen((user) {
-      if (user != null) {
-        context.push("/main");
-      }
-    });
-  }
+  void getCurrentUser() {}
 
   @override
   void initState() {
-    getCurrentUser();
     super.initState();
+    authService.authStateChanges().listen((user) {
+      if (user != null) {
+        context.push("/dashboard");
+      }
+    });
   }
 
   @override

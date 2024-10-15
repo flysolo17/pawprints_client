@@ -11,14 +11,13 @@ class AppRouter {
     routes: <GoRoute>[
       GoRoute(
         path: '/',
-
         redirect: (BuildContext context, GoRouterState state) => '/main',
       ),
       GoRoute(
-        path: '/main',
-        builder: (BuildContext context, GoRouterState state) {
-          return const MainScreen();
-      ),
+          path: '/main',
+          builder: (BuildContext context, GoRouterState state) {
+            return const MainScreen();
+          }),
       GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {

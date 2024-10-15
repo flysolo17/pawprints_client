@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pawprints/services/product.service.dart';
 
 import '../models/cart/cart.dart';
@@ -8,10 +9,13 @@ import '../models/product/product.dart';
 class CartService {
   final FirebaseFirestore firestore;
   final ProductService productService;
+  final FirebaseAuth auth;
   CartService({
     FirebaseFirestore? firebaseFirestore,
     ProductService? productService,
+    FirebaseAuth? firebaseAuth,
   })  : firestore = firebaseFirestore ?? FirebaseFirestore.instance,
+        auth = firebaseAuth ?? FirebaseAuth.instance,
         productService = productService ?? ProductService();
 
   Future<void> addToCart(Cart cart) async {
@@ -23,12 +27,15 @@ class CartService {
   }
 
   // Get cart items with product details by user ID
-  Future<List<CartWithProduct>> getCartWithProductByUserID(
-      String userID) async {
+  Future<List<CartWithProduct>> getCartWithProductByUserID() async {
     try {
+      User? user = auth.currentUser;
+      if (user == null) {
+        return [];
+      }
       QuerySnapshot querySnapshot = await firestore
           .collection('carts')
-          .where('userID', isEqualTo: userID)
+          .where('userID', isEqualTo: user.uid)
           .get();
       List<Cart> cartItems = querySnapshot.docs
           .map((doc) => Cart.fromJson(doc.data() as Map<String, dynamic>))

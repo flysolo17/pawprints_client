@@ -1,7 +1,31 @@
 import 'package:flutter/material.dart';
 
-class DashboardScreen extends StatelessWidget {
+import 'package:pawprints/screen/cart/cart.dart';
+import 'package:pawprints/screen/home/home.dart';
+import 'package:pawprints/screen/messages/messages.dart';
+import 'package:pawprints/screen/profile/proflle.dart';
+
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  final List<Widget> _pages = [
+    HomeScreen(),
+    CartScreen(),
+    MessageScreen(),
+    ProfileScreen()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            const Row(
               children: const [
                 CircleAvatar(
                   backgroundColor: Colors.white,
@@ -61,111 +85,13 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Image.asset(
-                  'lib/assets/img/paw_logo.png',
-                  height: 40,
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      "PAWPRINTS",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF001B44),
-                      ),
-                    ),
-                    Text(
-                      "Aucena Veterinary Clinic",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.blue[900],
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "PET CARE",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Image.asset(
-                    'lib/assets/img/pets_banner.jpg',
-                    height: 150,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              "SERVICES",
-              style: TextStyle(
-                fontSize: 18,
-                color: Color(0xFF001B44),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 5.0,
-                    spreadRadius: 2.0,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  serviceButton(context, "Laboratory Examinations"),
-                  const SizedBox(height: 10),
-                  serviceButton(context, "Additional Vaccines"),
-                  const SizedBox(height: 10),
-                  serviceButton(context, "Test Kits"),
-                  const SizedBox(height: 10),
-                  serviceButton(context, "Health Programs for Dogs"),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF001B44),
         selectedItemColor: const Color(0xFF14213D),
         unselectedItemColor: const Color(0xFF14213D),
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
         items: [
           const BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -187,9 +113,9 @@ class DashboardScreen extends StatelessWidget {
                       minWidth: 12,
                       minHeight: 12,
                     ),
-                    child: Text(
+                    child: const Text(
                       '3',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -218,9 +144,9 @@ class DashboardScreen extends StatelessWidget {
                       minWidth: 12,
                       minHeight: 12,
                     ),
-                    child: Text(
+                    child: const Text(
                       '5',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -238,29 +164,6 @@ class DashboardScreen extends StatelessWidget {
             label: 'Profile',
           ),
         ],
-        onTap: (index) {},
-      ),
-    );
-  }
-
-  Widget serviceButton(BuildContext context, String title) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, // Text color changed to white
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-          backgroundColor: Colors.blue[900],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-        ),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$title selected')),
-          );
-        },
-        child: Text(title),
       ),
     );
   }

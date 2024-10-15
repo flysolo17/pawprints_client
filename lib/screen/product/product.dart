@@ -1,17 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:pawprints/models/product/product.dart';
 import 'package:pawprints/models/product/stock_management.dart';
+import 'package:pawprints/models/users/users.dart';
 import 'package:pawprints/screen/product/product_card.dart';
+import 'package:pawprints/services/auth.service.dart';
+import 'package:pawprints/services/cart.service.dart';
 import 'package:pawprints/services/product.service.dart';
 
-class ProductScreen extends StatelessWidget {
+import '../../models/cart/cart.dart';
+import '../../ui/utils/toast.dart';
+
+class ProductScreen extends StatefulWidget {
   const ProductScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    ProductService _productService = ProductService();
+  _ProductScreenState createState() => _ProductScreenState();
+}
 
-    return FutureBuilder(
+class _ProductScreenState extends State<ProductScreen> {
+  late ProductService _productService;
+  late CartService _cartService;
+  late AuthService _authService;
+  Users? _users;
+
+  @override
+  void initState() {
+    super.initState();
+    _productService = ProductService();
+    _cartService = CartService();
+    _authService = AuthService();
+    _initializeUser();
+  }
+
+  void _initializeUser() async {
+    Users? user = await _authService.getUser();
+    setState(() {
+      _users = user;
+    });
+  }
+
+  void addToCart(Product product) {
+    if (_users == null) {
+      return;
+    }
+    Cart cart = Cart(
+      id: generateRandomNumber(maxLength: 10).toString(),
+      userID: _users!.id,
+      productID: product.id,
+      quantity: 1,
+      price: product.price,
+      addedAt: DateTime.now(),
+    );
+
+    _cartService.addToCart(cart).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Added ${product.name} to cart'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add ${product.name} to cart: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Product>>(
       future: _productService.getAllProducts(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -22,7 +82,11 @@ class ProductScreen extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           var products = snapshot.data ?? [];
-          return ProductTabs(products: products);
+          return ProductTabs(
+            products: products,
+            users: _users,
+            addToCart: addToCart,
+          );
         } else {
           return const Center(child: Text('No products found'));
         }
@@ -33,14 +97,22 @@ class ProductScreen extends StatelessWidget {
 
 class ProductTabs extends StatefulWidget {
   final List<Product> products;
-  const ProductTabs({super.key, required this.products});
+  final Users? users;
+  final void Function(Product) addToCart;
+
+  const ProductTabs(
+      {super.key,
+      required this.products,
+      required this.users,
+      required this.addToCart});
 
   @override
-  State<ProductTabs> createState() => _ProductTabsState();
+  _ProductTabsState createState() => _ProductTabsState();
 }
 
 class _ProductTabsState extends State<ProductTabs> {
   ProductType selectedType = ProductType.SERVICES;
+
   @override
   Widget build(BuildContext context) {
     List<Product> filteredProducts = widget.products
@@ -111,7 +183,7 @@ class _ProductTabsState extends State<ProductTabs> {
               ),
             ],
           ),
-          ProductList(products: filteredProducts)
+          ProductList(products: filteredProducts, addToCart: widget.addToCart),
         ],
       ),
     );
@@ -120,17 +192,23 @@ class _ProductTabsState extends State<ProductTabs> {
 
 class ProductList extends StatelessWidget {
   final List<Product> products;
-  const ProductList({super.key, required this.products});
+  final void Function(Product) addToCart;
+
+  const ProductList(
+      {super.key, required this.products, required this.addToCart});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: products.length,
-      shrinkWrap: true, // Add this to wrap content
-      physics: NeverScrollableScrollPhysics(), // Disable internal scrolling
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         final product = products[index];
-        return ProductCard(product: product);
+        return ProductCard(
+          product: product,
+          onTap: () => addToCart(product),
+        );
       },
     );
   }
