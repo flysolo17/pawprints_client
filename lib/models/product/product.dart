@@ -1,16 +1,16 @@
-import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pawprints/models/product/discount.dart';
 import 'package:pawprints/models/product/stock_management.dart';
 
 class Product {
-  String? id;
-  String? name;
-  String? image;
+  String id;
+  String name;
+  String image;
   ProductType type;
-  String? description;
-  String? categoryID;
-  String? features;
-  String? contents;
+  String description;
+  String categoryID;
+  String features;
+  String contents;
   int quantity;
   bool visibility;
   double cost;
@@ -22,25 +22,24 @@ class Product {
   List<StockManagement> stocks;
 
   Product({
-    this.id,
-    this.name,
-    this.image,
-    this.type = ProductType.GOODS,
-    this.description,
-    this.categoryID,
-    this.features,
-    this.contents,
-    this.quantity = 0,
-    this.visibility = false,
-    this.cost = 0.0,
-    this.price = 0.0,
-    this.discount,
-    this.expiration,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    this.stocks = const [],
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.type,
+    required this.description,
+    required this.categoryID,
+    required this.features,
+    required this.contents,
+    required this.quantity,
+    required this.visibility,
+    required this.cost,
+    required this.price,
+    required this.discount,
+    required this.expiration,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.stocks,
+  });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -59,10 +58,10 @@ class Product {
       discount:
           json['discount'] != null ? Discount.fromJson(json['discount']) : null,
       expiration: json['expiration'] != null
-          ? DateTime.parse(json['expiration'])
+          ? (json['expiration'] as Timestamp).toDate()
           : null,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
       stocks: (json['stocks'] as List)
           .map((item) => StockManagement.fromJson(item))
           .toList(),
@@ -84,9 +83,9 @@ class Product {
       'cost': cost,
       'price': price,
       'discount': discount?.toJson(),
-      'expiration': expiration?.toIso8601String(),
-      'createdAt': DateFormat('yyyy-MM-ddTHH:mm:ss').format(createdAt),
-      'updatedAt': DateFormat('yyyy-MM-ddTHH:mm:ss').format(updatedAt),
+      'expiration': expiration != null ? Timestamp.fromDate(expiration!) : null,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
       'stocks': stocks.map((item) => item.toJson()).toList(),
     };
   }

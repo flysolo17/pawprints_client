@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StockManagement {
   String message;
@@ -7,18 +7,18 @@ class StockManagement {
   DateTime date;
 
   StockManagement({
-    this.message = "",
-    this.quantity = 0,
-    this.movement = Movement.IN,
-    DateTime? date,
-  }) : date = date ?? DateTime.now();
+    required this.message,
+    required this.quantity,
+    required this.movement,
+    required this.date,
+  });
 
   factory StockManagement.fromJson(Map<String, dynamic> json) {
     return StockManagement(
       message: json['message'],
       quantity: json['quantity'],
       movement: Movement.values.byName(json['movement']),
-      date: DateTime.parse(json['date']),
+      date: (json['date'] as Timestamp).toDate(),
     );
   }
 
@@ -27,7 +27,7 @@ class StockManagement {
       'message': message,
       'quantity': quantity,
       'movement': movement.name,
-      'date': DateFormat('yyyy-MM-ddTHH:mm:ss').format(date),
+      'date': Timestamp.fromDate(date),
     };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Discount {
@@ -13,7 +14,7 @@ class Discount {
     return Discount(
       value: json['value'],
       expiration: json['expiration'] != null
-          ? DateTime.parse(json['expiration'])
+          ? (json['expiration'] as Timestamp).toDate()
           : null,
     );
   }
@@ -21,9 +22,7 @@ class Discount {
   Map<String, dynamic> toJson() {
     return {
       'value': value,
-      'expiration': expiration != null
-          ? DateFormat('yyyy-MM-ddTHH:mm:ss').format(expiration!)
-          : null,
+      'expiration': expiration != null ? Timestamp.fromDate(expiration!) : null,
     };
   }
 }
