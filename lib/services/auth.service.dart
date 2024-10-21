@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pawprints/models/users/users.dart';
 
-import '../models/users/pet.dart';
+const USERS_COLLECTION = "users";
 
 class AuthService {
   final FirebaseFirestore firestore;
@@ -29,7 +29,6 @@ class AuthService {
         email: email,
         phone: '',
         profile: '',
-        pets: [],
       );
       await firestore
           .collection('users')
@@ -83,28 +82,5 @@ class AuthService {
 
   Stream<User?> authStateChanges() {
     return auth.authStateChanges();
-  }
-
-  Future<void> addPet(String userId, Pet pet) async {
-    try {
-      DocumentReference userRef = firestore.collection('users').doc(userId);
-      await userRef.update({
-        'pets': FieldValue.arrayUnion([pet.toJson()])
-      });
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  // Delete a pet from a user
-  Future<void> deletePet(String userId, Pet pet) async {
-    try {
-      DocumentReference userRef = firestore.collection('users').doc(userId);
-      await userRef.update({
-        'pets': FieldValue.arrayRemove([pet.toJson()])
-      });
-    } catch (e) {
-      print(e.toString());
-    }
   }
 }

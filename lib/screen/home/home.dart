@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pawprints/screen/product/product.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
@@ -69,6 +70,19 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("My Pets"),
+              TextButton(
+                  onPressed: () {
+                    context.push("/pet/create");
+                  },
+                  child: Text("create pet"))
+            ],
           ),
           const SizedBox(height: 10),
           ProductScreen(),

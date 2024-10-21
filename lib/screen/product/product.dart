@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pawprints/config/router.dart';
 import 'package:pawprints/models/product/product.dart';
 import 'package:pawprints/models/product/stock_management.dart';
 import 'package:pawprints/models/users/users.dart';
@@ -207,7 +209,8 @@ class ProductList extends StatelessWidget {
         final product = products[index];
         return ProductCard(
           product: product,
-          onTap: () => addToCart(product),
+          onAddToCart: () => addToCart(product),
+          onTap: () => context.push('/product/${product.id}'),
         );
       },
     );

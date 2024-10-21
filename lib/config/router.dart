@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pawprints/screen/pets/create_pet.dart';
+import 'package:pawprints/screen/product/view_product.dart';
 import 'package:pawprints/ui/auth/login.dart';
 import 'package:pawprints/ui/auth/register.dart';
 import 'package:pawprints/screen/dashboard/dashboard.dart';
@@ -40,6 +42,19 @@ class AppRouter {
         path: '/product',
         builder: (BuildContext context, GoRouterState state) {
           return const ProductScreen();
+        },
+      ),
+      GoRoute(
+        path: '/product/:id',
+        builder: (BuildContext context, GoRouterState state) {
+          final String id = state.pathParameters['id'] ?? "";
+          return ViewProduct(id: id);
+        },
+      ),
+      GoRoute(
+        path: '/pet/create',
+        builder: (BuildContext context, GoRouterState state) {
+          return const CreatePet();
         },
       ),
     ],

@@ -5,8 +5,13 @@ import '../../models/product/stock_management.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
+  final VoidCallback onAddToCart;
   final VoidCallback onTap;
-  const ProductCard({super.key, required this.product, required this.onTap});
+  const ProductCard(
+      {super.key,
+      required this.product,
+      required this.onAddToCart,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,7 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          debugPrint('Card tapped.');
+          onTap();
         },
         child: Column(
           children: [
@@ -35,7 +40,7 @@ class ProductCard extends StatelessWidget {
               trailing: product.type == ProductType.GOODS
                   ? IconButton(
                       onPressed: () {
-                        onTap();
+                        onAddToCart();
                       },
                       icon: const Icon(Icons.shopping_cart),
                     )
