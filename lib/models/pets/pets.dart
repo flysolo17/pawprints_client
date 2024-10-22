@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class Pet {
   final String id;
   final String name;
