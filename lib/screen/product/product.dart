@@ -5,6 +5,7 @@ import 'package:pawprints/models/product/product.dart';
 import 'package:pawprints/models/product/stock_management.dart';
 import 'package:pawprints/models/users/users.dart';
 import 'package:pawprints/screen/product/product_card.dart';
+import 'package:pawprints/screen/product/services_card.dart';
 import 'package:pawprints/services/auth.service.dart';
 import 'package:pawprints/services/cart.service.dart';
 import 'package:pawprints/services/product.service.dart';
@@ -129,63 +130,42 @@ class _ProductTabsState extends State<ProductTabs> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    selectedType = ProductType.SERVICES;
-                  });
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: selectedType == ProductType.SERVICES
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                child: Column(
-                  children: [
-                    const Text('Services'),
-                    if (selectedType == ProductType.SERVICES)
-                      Container(
-                        margin: const EdgeInsets.only(top: 2.0),
-                        height: 4.0,
-                        width: 4.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    selectedType = ProductType.GOODS;
-                  });
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: selectedType == ProductType.GOODS
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                child: Column(
-                  children: [
-                    const Text('Products'),
-                    if (selectedType == ProductType.GOODS)
-                      Container(
-                        margin: const EdgeInsets.only(top: 2.0),
-                        height: 4.0,
-                        width: 4.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+              _buildTabButton('Services', ProductType.SERVICES),
+              _buildTabButton('Products', ProductType.GOODS),
             ],
           ),
           ProductList(products: filteredProducts, addToCart: widget.addToCart),
+        ],
+      ),
+    );
+  }
+
+  TextButton _buildTabButton(String label, ProductType type) {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          selectedType = type;
+        });
+      },
+      style: TextButton.styleFrom(
+        foregroundColor: selectedType == type
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface,
+      ),
+      child: Column(
+        children: [
+          Text(label),
+          if (selectedType == type)
+            Container(
+              margin: const EdgeInsets.only(top: 2.0),
+              height: 4.0,
+              width: 20.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(2.0),
+              ),
+            ),
         ],
       ),
     );
@@ -207,12 +187,49 @@ class ProductList extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         final product = products[index];
+        if (product.type == ProductType.SERVICES) {
+          return ServicesCard(
+              product: product,
+              onTap: () => context.push('/product/${product.id}'));
+        }
         return ProductCard(
           product: product,
           onAddToCart: () => addToCart(product),
           onTap: () => context.push('/product/${product.id}'),
         );
       },
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+  final VoidCallback onAddToCart;
+  final VoidCallback onTap;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.onAddToCart,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: Image.network(product.image, width: 50, height: 50),
+        title: Text(product.name),
+        subtitle: Text('₱${product.price.toStringAsFixed(2)}'),
+        trailing: IconButton(
+          icon: const Icon(Icons.add_shopping_cart),
+          onPressed: onAddToCart,
+        ),
+        onTap: onTap,
+      ),
     );
   }
 }

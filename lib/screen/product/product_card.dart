@@ -28,7 +28,7 @@ class ProductCard extends StatelessWidget {
               product.image!,
               width: double.infinity,
               height: 180,
-              fit: BoxFit.cover, // Center crop effect
+              fit: BoxFit.cover,
             ),
             ListTile(
               title: Text("${product.name}"),

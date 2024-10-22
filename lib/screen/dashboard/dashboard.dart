@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:pawprints/screen/cart/cart.dart';
 import 'package:pawprints/screen/home/home.dart';
@@ -39,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Row(
-              children: const [
+              children: [
                 CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Icon(Icons.person, color: Color(0xFF001B44)),
@@ -57,9 +58,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             PopupMenuButton<String>(
               icon: const Icon(Icons.menu, color: Colors.white),
               onSelected: (String value) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$value selected')),
-                );
+                if (value == 'Developers') {
+                  context.push("/developers");
+                } else if (value == 'Credits') {
+                  // Handle navigation to CreditsScreen
+                  context.push("/credits");
+                } else if (value == 'About the System') {
+                  context.push("/about");
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$value selected')),
+                  );
+                }
               },
               itemBuilder: (BuildContext context) {
                 return [

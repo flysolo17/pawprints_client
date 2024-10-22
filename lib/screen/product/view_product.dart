@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pawprints/models/product/stock_management.dart';
 import 'package:pawprints/services/cart.service.dart';
 import 'package:pawprints/services/product.service.dart';
+import 'package:pawprints/ui/utils/toast.dart';
 
 import '../../models/cart/cart.dart';
 import '../../models/product/product.dart';
 import '../../models/users/users.dart';
 import '../../services/auth.service.dart';
-import '../../ui/utils/toast.dart';
 
 class ViewProduct extends StatefulWidget {
   final String id;
@@ -22,6 +22,7 @@ class _ViewProductState extends State<ViewProduct> {
   final CartService cartService = CartService();
   late AuthService authService = AuthService();
   Users? users;
+
   void initializeUser() async {
     Users? user = await authService.getUser();
     setState(() {
@@ -31,9 +32,11 @@ class _ViewProductState extends State<ViewProduct> {
 
   void addToCart(Product product) {
     if (users == null) {
-      const SnackBar(
-        content: Text('No Users found'),
-        backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No user found'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -73,11 +76,14 @@ class _ViewProductState extends State<ViewProduct> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        actionsIconTheme: const IconThemeData(color: Colors.white),
-        titleTextStyle: const TextStyle(color: Colors.white),
-        backgroundColor: const Color(0xFF001B44),
-        title: const Text('Product Details'),
+        backgroundColor: const Color(0xFF1A237E), // Pawprints theme color
+        title: Row(
+          children: const [
+            Icon(Icons.pets, color: Colors.white), // Paw print logo
+            SizedBox(width: 10),
+            Text('Product Details'),
+          ],
+        ),
       ),
       body: FutureBuilder<Product?>(
         future: productService.getProductById(widget.id), // Fetch product by ID
@@ -92,48 +98,127 @@ class _ViewProductState extends State<ViewProduct> {
             return const Center(child: Text('Product not found'));
           }
 
-          // Product fetched successfully
           final product = snapshot.data!;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(product.image),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name, // Display product name
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.network(
+                          product.image,
+                          height: 250,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: Icon(
+                            Icons.pets,
+                            color: Colors.white.withOpacity(0.8),
+                            size: 40,
+                          ), // Paw print overlay
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                product.name,
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.pets, color: Colors.teal),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Price: ₱${product.price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Description:',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            product.description,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 20),
+                          if (product.type == ProductType.GOODS)
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                addToCart(product);
+                              },
+                              icon: const Icon(Icons.shopping_cart),
+                              label: const Text("Add to Cart"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                            )
+                          else
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                // Add functionality for appointments
+                              },
+                              icon: const Icon(Icons.schedule),
+                              label: const Text("Create Appointment"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 43, 180, 100),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Price: ₱${product.price.toStringAsFixed(2)}',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Description: ${product.description}',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    if (product.type == ProductType.GOODS)
-                      TextButton(
-                          child: Text("Add to cart"),
-                          onPressed: () {
-                            addToCart(product);
-                          })
-                    else
-                      TextButton(
-                          child: Text("Create Appointment"), onPressed: () {})
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           );
         },
       ),

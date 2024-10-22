@@ -30,5 +30,13 @@ flutter:
   uses-material-design: true
 
   assets:
+    - lib/assets/img/dev1.png
+    - lib/assets/img/dev2.png
+    - lib/assets/img/dev3.png
+    - lib/assets/img/dev4.png
     - lib/assets/img/paw_logo.png
     - lib/assets/img/pets_banner.jpg
+    - lib/assets/img/pawprint_bg.png
+    - lib/assets/img/ailen_garcia.png
+    - lib/assets/img/eleonor_turga.png
+    - lib/assets/img/ariel_manuel.png

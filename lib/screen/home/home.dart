@@ -71,6 +71,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
+          
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
